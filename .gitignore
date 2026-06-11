@@ -1,0 +1,8 @@
+# LO USUAL
+.DS_Store
+__pycache__
+.env
+.venv
+
+# ESPECIFICOS DE ESTE REPOSITORIO
+*.csv
