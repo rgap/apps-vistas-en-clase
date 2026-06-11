@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruta optima para conductor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <h1 id="app-title">Busqueda en espacios de rutas</h1>
+          </div>
+          <div class="trip-summary" aria-label="Resumen del viaje">
+            <span>Origen: <strong>A</strong></span>
+            <span>Destino: <strong id="goalSummary">F</strong></span>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles de busqueda">
+          <div class="field destination-field">
+            <label for="goalNode">Destino</label>
+            <select id="goalNode"></select>
+          </div>
+          <div class="field">
+            <label for="algorithm">Busqueda</label>
+            <select id="algorithm">
+              <option value="astar">A*</option>
+              <option value="bfs">Busqueda por anchura</option>
+              <option value="dfs">Busqueda por profundidad</option>
+              <option value="hill">Hill Climbing</option>
+              <option value="exhaustive">Busqueda exhaustiva</option>
+            </select>
+          </div>
+          <button id="runSearch" class="primary-button" type="button">
+            Calcular ruta
+          </button>
+          <button id="resetSearch" class="ghost-button" type="button">
+            Reiniciar
+          </button>
+        </section>
+
+        <section class="visual-grid">
+          <div class="map-panel">
+            <svg
+              id="routeGraph"
+              class="route-graph"
+              viewBox="0 0 1100 620"
+              role="img"
+              aria-label="Grafo con nodos de A a K"
+            ></svg>
+          </div>
+
+          <aside class="side-panel" aria-label="Informacion de la ruta">
+            <section class="panel-section">
+              <h2>Resultado</h2>
+              <dl class="metric-list">
+                <div>
+                  <dt>Ruta optima encontrada</dt>
+                  <dd id="routeText">A -> F</dd>
+                </div>
+                <div>
+                  <dt>Tiempo</dt>
+                  <dd id="timeText">-</dd>
+                </div>
+                <div>
+                  <dt>Tiempo de calculo estimado</dt>
+                  <dd id="calcTimeText">-</dd>
+                </div>
+                <div>
+                  <dt>Nodos de la ruta optima encontrada</dt>
+                  <dd id="stepCount">-</dd>
+                </div>
+                <div>
+                  <dt>Nodos revisados</dt>
+                  <dd id="visitedCount">-</dd>
+                </div>
+                <div>
+                  <dt>Rutas completas evaluadas</dt>
+                  <dd id="routeCount">-</dd>
+                </div>
+              </dl>
+              <p id="resultNote" class="result-note"></p>
+            </section>
+
+            <section class="panel-section known-route">
+              <h2>Ruta optima verdadera</h2>
+              <p id="knownRouteCode" class="known-route-code">
+                A -> B -> C -> J -> K -> E -> F
+              </p>
+              <p id="knownRouteMetrics" class="known-route-metrics">
+                6 minutos
+              </p>
+            </section>
+          </aside>
+        </section>
+
+        <details class="nodes-panel" aria-label="Nodos">
+          <summary>Nodos</summary>
+          <div id="legend" class="legend"></div>
+        </details>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
