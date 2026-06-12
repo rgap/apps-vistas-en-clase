@@ -131,6 +131,12 @@ function localHillScore(edge, heuristic) {
   return edge.time + heuristic[edge.to];
 }
 
+function aStarScore(candidate, heuristic) {
+  const i = candidate.i;
+  const j = heuristic[candidate.node];
+  return i + j;
+}
+
 function pathEdges(path) {
   const pairs = [];
   for (let index = 0; index < path.length - 1; index += 1) {
@@ -475,13 +481,13 @@ function hillClimbing() {
 }
 
 function aStar() {
-  const open = [{ node: start, path: [start], g: 0, from: null }];
+  const open = [{ node: start, path: [start], i: 0, from: null }];
   const bestCost = new Map([[start, 0]]);
   const visited = [];
   const heuristic = getHeuristic(state.goal);
 
   while (open.length) {
-    open.sort((a, b) => a.g + heuristic[a.node] - (b.g + heuristic[b.node]));
+    open.sort((a, b) => aStarScore(a, heuristic) - aStarScore(b, heuristic));
     const current = open.shift();
     visited.push({ node: current.node, from: current.from });
 
@@ -490,13 +496,13 @@ function aStar() {
     }
 
     getNeighbors(current.node).forEach((edge) => {
-      const nextCost = current.g + edge.time;
+      const nextCost = current.i + edge.time;
       if (bestCost.has(edge.to) && bestCost.get(edge.to) <= nextCost) return;
       bestCost.set(edge.to, nextCost);
       open.push({
         node: edge.to,
         path: [...current.path, edge.to],
-        g: nextCost,
+        i: nextCost,
         from: current.node,
       });
     });
@@ -515,7 +521,7 @@ const algorithms = {
 
 const algorithmNotes = {
   astar:
-    "A* calcula f(n) = g(n) + h(n). Donde g(n) es el tiempo acumulado y h(n) es la heuristica: minimo numero de nodos restantes hasta el destino seleccionado.",
+    "A* calcula f(n) = i(n) + j(n). Donde i(n) es el tiempo acumulado y j(n) es la heuristica: minimo numero de tramos restantes hasta el destino seleccionado.",
   exhaustive:
     "La busqueda exhaustiva compara todas las rutas completas. Encuentra la optima, pero revisa mas posibilidades.",
   bfs: "BFS busca por niveles y se detiene al llegar al destino. En este grafo minimiza nodos en la ruta, no tiempo.",
