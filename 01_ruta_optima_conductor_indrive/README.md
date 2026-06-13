@@ -13,22 +13,27 @@
 ```gherkin
 Scenario: Ver la ruta hacia el destino
   Given ya recogi al pasajero
-  And mi ubicacion actual esta disponible
-  And el destino del pasajero esta disponible
+  And la ubicacion actual es A
+  And el destino seleccionado es F
+  And la busqueda seleccionada es "Busqueda exhaustiva"
   When presiono el boton "Calcular ruta"
   Then veo la ruta sugerida hacia el destino
-  And veo el tiempo estimado de llegada
+  And veo el tiempo de ruta
+  And veo la nota del algoritmo seleccionado
 
 Scenario: Ruta no disponible
   Given ya recogi al pasajero
-  And no existe una ruta disponible hacia el destino
+  And selecciono el destino H
+  And selecciono "Hill Climbing sin reinicio"
   When presiono el boton "Calcular ruta"
-  Then veo el mensaje "No se encontro una ruta disponible"
+  Then veo el mensaje "Sin ruta disponible"
 
-Scenario: Datos incompletos
-  Given falta mi ubicacion actual o el destino del pasajero
+Scenario: Cambiar destino
+  Given la app muestra el origen fijo A
+  And selecciono un destino diferente en el desplegable
   When presiono el boton "Calcular ruta"
-  Then veo un mensaje indicando que falta informacion
+  Then veo el resultado para el destino seleccionado
+  And veo la ruta optima verdadera para ese destino
 ```
 
 ## Tareas tecnicas
@@ -36,13 +41,13 @@ Scenario: Datos incompletos
 - Definir un mapa pequeno como grafo.
 - Crear nodos para ubicacion actual del conductor, destino e intersecciones.
 - Crear conexiones entre nodos con costo de tiempo.
+- Implementar busqueda exhaustiva para mapas pequenos.
 - Implementar busqueda por profundidad DFS.
 - Implementar busqueda por anchura BFS.
-- Implementar busqueda exhaustiva para mapas pequenos.
 - Implementar Hill Climbing sin reinicio usando una evaluacion local: tiempo del tramo inmediato.
 - Implementar A* usando la formula `f(n) = g(n) + h(n)`.
-- Calcular la ruta mas rapida desde la ubicacion actual hasta el destino.
-- Mostrar ruta sugerida, tiempo estimado y puntos revisados.
+- Calcular la ruta segun el algoritmo seleccionado.
+- Mostrar ruta sugerida, tiempo de ruta, puntos revisados y rutas completas evaluadas cuando aplique.
 - Comparar resultados entre algoritmos como parte del analisis tecnico.
 
 ## Tema del curso
@@ -53,9 +58,9 @@ Este proyecto trata del:
 
 Subtemas:
 
-- Busqueda por profundidad.
-- Busqueda por anchura.
 - Busqueda exhaustiva.
+- Busqueda por profundidad (DFS).
+- Busqueda por anchura (BFS).
 - Busqueda con Hill Climbing sin reinicio.
 - Busqueda con A*.
 
@@ -84,7 +89,7 @@ calles o rutas disponibles
 tiempo estimado entre nodos
 ```
 
-El objetivo es sugerir la ruta mas rapida para completar el viaje.
+El objetivo de la app visual es comparar algoritmos de busqueda sobre el mismo mapa. La seccion de resultado muestra la ruta encontrada por el algoritmo elegido y, aparte, la ruta optima verdadera para el destino seleccionado.
 
 ## Escenario
 
@@ -148,7 +153,7 @@ graph LR
   C -- "1 min" --> J["J: Av. Jorge Chavez"]
   J -- "1 min" --> K["K: Pierola"]
   K -- "1 min" --> E
-  B -- "3 min" --> G["G: Tarapaca"]
+  B -- "1 min" --> G["G: Tarapaca"]
   G -- "1 min" --> H["H: Av. La Marina"]
   H -- "1 min" --> I["I: Palacio Viejo"]
   I -- "1 min" --> E
@@ -176,7 +181,7 @@ El grafo no incluye atajos directos entre puntos no consecutivos. Cada conexion 
 | C | J | Salaverry -> Av. Jorge Chavez | 1 min | medio |
 | J | K | Av. Jorge Chavez -> Pierola | 1 min | medio |
 | K | E | Pierola -> Santo Domingo | 1 min | bajo |
-| B | G | Av. Parra -> Tarapaca | 3 min | bajo |
+| B | G | Av. Parra -> Tarapaca | 1 min | bajo |
 | G | H | Tarapaca -> Av. La Marina | 1 min | bajo |
 | H | I | Av. La Marina -> Palacio Viejo | 1 min | bajo |
 | I | E | Palacio Viejo -> Santo Domingo | 1 min | bajo |
@@ -187,7 +192,7 @@ El grafo no incluye atajos directos entre puntos no consecutivos. Cada conexion 
 | ---- | --------- | -----: | ---------------- |
 | Ruta optima | A -> B -> C -> J -> K -> E -> F | 6 min | medio |
 | Ruta por Alvarez Thomas | A -> B -> C -> D -> E -> F | 7 min | medio |
-| Ruta alternativa con menos trafico | A -> B -> G -> H -> I -> E -> F | 8 min | bajo |
+| Ruta alternativa con menos trafico | A -> B -> G -> H -> I -> E -> F | 6 min | bajo |
 
 ## Estados del problema
 
@@ -232,7 +237,7 @@ Para esta primera version:
 costo = tiempo estimado en minutos
 ```
 
-## Busqueda por profundidad DFS
+## Busqueda por profundidad (DFS)
 
 DFS explora una ruta completa antes de probar otra.
 
@@ -251,7 +256,7 @@ Limitacion:
 No garantiza encontrar la ruta mas rapida.
 ```
 
-## Busqueda por anchura BFS
+## Busqueda por anchura (BFS)
 
 BFS explora primero las rutas con menos nodos.
 
@@ -307,6 +312,8 @@ elige el tramo disponible con menor tiempo
 ```
 
 Esto muestra la idea de optimo local: la decision parece buena en ese momento, pero no considera lo que falta despues.
+
+Si dos tramos tienen el mismo tiempo, la app conserva el orden en que fueron definidos en el grafo.
 
 Limitacion:
 
@@ -374,12 +381,16 @@ Heuristica usada por A* en el ejemplo con destino F:
 La aplicacion debe permitir:
 
 ```txt
-1. Ver que el pasajero ya esta a bordo.
-2. Ver la ubicacion actual del conductor.
-3. Ver el destino del pasajero.
-4. Calcular la ruta mas rapida hacia el destino.
-5. Mostrar la ruta sugerida.
-6. Mostrar tiempo estimado de llegada.
+1. Ver el origen fijo A.
+2. Seleccionar el destino.
+3. Seleccionar el algoritmo de busqueda.
+4. Calcular la ruta segun el algoritmo seleccionado.
+5. Mostrar la ruta encontrada.
+6. Mostrar el tiempo de ruta.
+7. Mostrar nodos revisados.
+8. Mostrar rutas completas evaluadas cuando se usa busqueda exhaustiva.
+9. Mostrar la ruta optima verdadera para comparar.
+10. Mantener visible la nota del algoritmo seleccionado.
 ```
 
 ## Ejemplo de salida
@@ -394,7 +405,7 @@ Plaza de Armas de Arequipa
 Ruta sugerida:
 A -> B -> C -> J -> K -> E -> F
 
-Tiempo estimado:
+Tiempo de ruta:
 6 minutos
 ```
 
@@ -402,11 +413,11 @@ Tiempo estimado:
 
 | Algoritmo | Que muestra | Utilidad en el proyecto |
 | --------- | ----------- | ----------------------- |
-| A* | Usa costo real y estimacion | Mejor opcion para ruta optima |
-| BFS | Busca menos nodos | Util si todas las conexiones entre nodos cuestan igual |
-| DFS | Explora caminos completos | Bueno para ver retroceso y ramas |
-| Hill Climbing sin reinicio | Elige el tramo inmediato con menor tiempo | Rapido, pero no garantiza llegar al destino ni encontrar la ruta optima |
 | Exhaustiva | Compara todas las rutas | Encuentra la mejor ruta, pero tarda mas en calcular |
+| DFS | Explora caminos completos | Bueno para ver retroceso y ramas |
+| BFS | Busca menos nodos | Util si todas las conexiones entre nodos cuestan igual |
+| Hill Climbing sin reinicio | Elige el tramo inmediato con menor tiempo | Rapido, pero no garantiza llegar al destino ni encontrar la ruta optima |
+| A* | Usa costo real y estimacion | Mejor opcion para ruta optima |
 
 ## Alcance realista
 
@@ -476,16 +487,17 @@ g(n) = minutos acumulados desde A
 h(n) = minimo numero de nodos restantes hasta el destino seleccionado
 ```
 
-Con los datos actuales, la ruta de menor tiempo hacia F es:
+Con los datos actuales hay dos rutas que empatan en tiempo total hacia F:
 
 ```txt
 A -> B -> C -> J -> K -> E -> F = 6 minutos
+A -> B -> G -> H -> I -> E -> F = 6 minutos
 ```
 
-La alternativa por G, H e I queda como ruta de menor trafico, pero no como la de menor tiempo:
+La app muestra como ruta optima verdadera:
 
 ```txt
-A -> B -> G -> H -> I -> E -> F = 8 minutos
+A -> B -> C -> J -> K -> E -> F
 ```
 
 La busqueda exhaustiva tambien puede encontrar la ruta optima porque revisa todas las rutas posibles. Sin embargo, no suele ser la opcion mas rapida para calcularla, especialmente cuando el mapa crece.

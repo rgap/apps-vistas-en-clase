@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Apps vistas en clase</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --ink: #172033;
+        --muted: #667085;
+        --line: #d6deea;
+        --accent: #2563eb;
+        --route: #16a34a;
+        --soft: #eef4ff;
+        --shadow: 0 18px 45px rgba(23, 32, 51, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, #ffffff 0%, var(--bg) 42%),
+          var(--bg);
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      header {
+        margin-bottom: 28px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        margin: 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .app-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: start;
+        gap: 18px;
+      }
+
+      .app-card {
+        display: grid;
+        overflow: hidden;
+        color: inherit;
+        text-decoration: none;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .app-card:hover,
+      .app-card:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(37, 99, 235, 0.45);
+        box-shadow: 0 22px 52px rgba(23, 32, 51, 0.16);
+        outline: none;
+      }
+
+      .thumbnail {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: var(--soft);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .card-body {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.25;
+      }
+
+      .badge {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        color: #155e2f;
+        background: #dcfce7;
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+
+      .description {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .meta li {
+        padding: 5px 8px;
+        color: #344054;
+        background: #f8fafc;
+        border: 1px solid #e4e7ec;
+        border-radius: 6px;
+        font-size: 0.76rem;
+      }
+
+      .open-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .open-label::after {
+        content: "->";
+      }
+
+      @media (max-width: 900px) {
+        .app-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        main {
+          width: min(100% - 24px, 1120px);
+          padding: 28px 0;
+        }
+
+        .card-title {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Apps vistas en clase</h1>
+        <p class="lead">
+          Indice de aplicaciones desarrolladas para practicar algoritmos y
+          visualizacion de busqueda.
+        </p>
+      </header>
+
+      <section class="app-grid" aria-label="Aplicaciones disponibles">
+        <a
+          class="app-card"
+          href="01_ruta_optima_conductor_indrive/app_visual/index.html"
+        >
+          <svg
+            class="thumbnail"
+            viewBox="0 0 720 405"
+            role="img"
+            aria-label="Miniatura del grafo de rutas de A a F"
+          >
+            <rect width="720" height="405" fill="#eef4ff" />
+            <rect x="28" y="28" width="664" height="349" rx="8" fill="#fff" />
+            <rect x="48" y="50" width="418" height="306" rx="8" fill="#f8fafc" />
+            <rect x="492" y="50" width="150" height="306" rx="8" fill="#f9fafb" />
+
+            <g stroke="#c7d2e5" stroke-width="5" stroke-linecap="round">
+              <line x1="88" y1="205" x2="158" y2="205" />
+              <line x1="158" y1="205" x2="238" y2="145" />
+              <line x1="238" y1="145" x2="338" y2="92" />
+              <line x1="338" y1="92" x2="432" y2="190" />
+              <line x1="238" y1="145" x2="336" y2="205" />
+              <line x1="336" y1="205" x2="404" y2="246" />
+              <line x1="404" y1="246" x2="432" y2="190" />
+              <line x1="158" y1="205" x2="238" y2="292" />
+              <line x1="238" y1="292" x2="338" y2="292" />
+              <line x1="338" y1="292" x2="430" y2="286" />
+              <line x1="430" y1="286" x2="432" y2="190" />
+            </g>
+
+            <g stroke="#16a34a" stroke-width="7" stroke-linecap="round">
+              <line x1="88" y1="205" x2="158" y2="205" />
+              <line x1="158" y1="205" x2="238" y2="145" />
+              <line x1="238" y1="145" x2="336" y2="205" />
+              <line x1="336" y1="205" x2="404" y2="246" />
+              <line x1="404" y1="246" x2="432" y2="190" />
+              <line x1="432" y1="190" x2="456" y2="190" />
+            </g>
+
+            <g font-family="Inter, Arial, sans-serif" font-weight="800">
+              <g fill="#fff" stroke="#2563eb" stroke-width="4">
+                <circle cx="88" cy="205" r="20" />
+                <circle cx="158" cy="205" r="20" />
+                <circle cx="238" cy="145" r="20" />
+                <circle cx="338" cy="92" r="20" />
+                <circle cx="432" cy="190" r="20" />
+                <circle cx="238" cy="292" r="20" />
+                <circle cx="338" cy="292" r="20" />
+                <circle cx="430" cy="286" r="20" />
+                <circle cx="336" cy="205" r="20" />
+                <circle cx="404" cy="246" r="20" />
+                <circle cx="456" cy="190" r="20" />
+              </g>
+              <g fill="#172033" text-anchor="middle" font-size="16">
+                <text x="88" y="211">A</text>
+                <text x="158" y="211">B</text>
+                <text x="238" y="151">C</text>
+                <text x="338" y="98">D</text>
+                <text x="432" y="196">E</text>
+                <text x="238" y="298">G</text>
+                <text x="338" y="298">H</text>
+                <text x="430" y="292">I</text>
+                <text x="336" y="211">J</text>
+                <text x="404" y="252">K</text>
+                <text x="456" y="196">F</text>
+              </g>
+            </g>
+
+            <g font-family="Inter, Arial, sans-serif">
+              <text x="516" y="92" fill="#172033" font-size="20" font-weight="800">
+                Resultado
+              </text>
+              <rect x="516" y="116" width="96" height="12" rx="4" fill="#d9e4f5" />
+              <rect x="516" y="141" width="76" height="12" rx="4" fill="#dcfce7" />
+              <rect x="516" y="181" width="104" height="12" rx="4" fill="#d9e4f5" />
+              <rect x="516" y="206" width="64" height="12" rx="4" fill="#d9e4f5" />
+              <rect x="516" y="262" width="92" height="12" rx="4" fill="#dcfce7" />
+              <rect x="516" y="287" width="76" height="12" rx="4" fill="#dcfce7" />
+            </g>
+          </svg>
+
+          <div class="card-body">
+            <div class="card-title">
+              <h2>Ruta optima para conductor en inDrive</h2>
+              <span class="badge">Busqueda</span>
+            </div>
+            <p class="description">
+              Visualizacion de rutas en un grafo con busqueda exhaustiva, DFS,
+              BFS, Hill Climbing sin reinicio y A*.
+            </p>
+            <ul class="meta" aria-label="Detalles del proyecto">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+            </ul>
+            <span class="open-label">Abrir app</span>
+          </div>
+        </a>
+      </section>
+    </main>
+  </body>
+</html>
