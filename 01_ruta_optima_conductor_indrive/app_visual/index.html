@@ -27,11 +27,11 @@
           <div class="field">
             <label for="algorithm">Busqueda</label>
             <select id="algorithm">
-              <option value="astar">A*</option>
-              <option value="bfs">Busqueda por anchura</option>
-              <option value="dfs">Busqueda por profundidad</option>
-              <option value="hill">Hill Climbing</option>
               <option value="exhaustive">Busqueda exhaustiva</option>
+              <option value="dfs">Busqueda por profundidad</option>
+              <option value="bfs">Busqueda por anchura</option>
+              <option value="hill">Hill Climbing sin reinicio</option>
+              <option value="astar">A*</option>
             </select>
           </div>
           <button id="runSearch" class="primary-button" type="button">
@@ -62,7 +62,7 @@
                   <dd id="routeText">A -> F</dd>
                 </div>
                 <div>
-                  <dt>Tiempo</dt>
+                  <dt>Tiempo de ruta</dt>
                   <dd id="timeText">-</dd>
                 </div>
                 <div>
@@ -86,7 +86,7 @@
             </section>
 
             <section class="panel-section known-route">
-              <h2>Ruta optima verdadera</h2>
+              <dt>Ruta optima verdadera</dt>
               <p id="knownRouteCode" class="known-route-code">
                 A -> B -> C -> J -> K -> E -> F
               </p>

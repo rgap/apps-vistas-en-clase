@@ -306,7 +306,8 @@ select:focus-visible {
   gap: 2px;
 }
 
-.metric-list dt {
+.metric-list dt,
+.panel-section dt {
   color: var(--muted);
   font-size: 12px;
   font-weight: 800;

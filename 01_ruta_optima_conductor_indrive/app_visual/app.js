@@ -1,15 +1,15 @@
 const nodes = {
-  A: { name: "UTP nueva sede", x: 90, y: 310, h: 5 },
-  B: { name: "Av. Parra", x: 230, y: 310, h: 4 },
-  C: { name: "Salaverry", x: 390, y: 215, h: 3 },
-  D: { name: "Alvarez Thomas", x: 600, y: 105, h: 2 },
-  E: { name: "Santo Domingo", x: 850, y: 300, h: 1 },
-  F: { name: "Plaza de Armas", x: 1010, y: 300, h: 0 },
-  G: { name: "Tarapaca", x: 390, y: 500, h: 4 },
-  H: { name: "Av. La Marina", x: 600, y: 500, h: 3 },
-  I: { name: "Palacio Viejo", x: 820, y: 485, h: 2 },
-  J: { name: "Av. Jorge Chavez", x: 600, y: 310, h: 3 },
-  K: { name: "Pierola", x: 740, y: 390, h: 2 },
+  A: { name: "UTP nueva sede", x: 90, y: 310 },
+  B: { name: "Av. Parra", x: 230, y: 310 },
+  C: { name: "Salaverry", x: 390, y: 215 },
+  D: { name: "Alvarez Thomas", x: 600, y: 105 },
+  E: { name: "Santo Domingo", x: 850, y: 300 },
+  F: { name: "Plaza de Armas", x: 1010, y: 300 },
+  G: { name: "Tarapaca", x: 390, y: 500 },
+  H: { name: "Av. La Marina", x: 600, y: 500 },
+  I: { name: "Palacio Viejo", x: 820, y: 485 },
+  J: { name: "Av. Jorge Chavez", x: 600, y: 310 },
+  K: { name: "Pierola", x: 740, y: 390 },
 };
 
 const edges = [
@@ -36,13 +36,13 @@ const graph = edges.reduce((acc, edge) => {
 }, {});
 
 const state = {
-  selectedAlgorithm: "astar",
+  selectedAlgorithm: "exhaustive",
   goal: "F",
   animationToken: 0,
 };
 
 const calculationBenchmarkRuns = 10000;
-const heuristicCache = new Map();
+const aStarHeuristicCache = new Map();
 
 const svg = document.getElementById("routeGraph");
 const algorithmSelect = document.getElementById("algorithm");
@@ -81,7 +81,7 @@ function getNeighbors(node) {
   return graph[node] || [];
 }
 
-function shortestHopHeuristic(target) {
+function shortestHopAStarHeuristic(target) {
   const reversed = edges.reduce((acc, edge) => {
     acc[edge.to] = acc[edge.to] || [];
     acc[edge.to].push(edge.from);
@@ -105,12 +105,12 @@ function shortestHopHeuristic(target) {
   return hops;
 }
 
-function getHeuristic(target = state.goal) {
-  if (!heuristicCache.has(target)) {
-    heuristicCache.set(target, shortestHopHeuristic(target));
+function getAStarHeuristic(target = state.goal) {
+  if (!aStarHeuristicCache.has(target)) {
+    aStarHeuristicCache.set(target, shortestHopAStarHeuristic(target));
   }
 
-  return heuristicCache.get(target);
+  return aStarHeuristicCache.get(target);
 }
 
 function routeStats(path) {
@@ -127,8 +127,12 @@ function routeStats(path) {
   };
 }
 
-function localHillScore(edge, heuristic) {
-  return edge.time + heuristic[edge.to];
+function localHillScore(edge) {
+  return edge.time;
+}
+
+function compareHillCandidates(a, b) {
+  return localHillScore(a) - localHillScore(b);
 }
 
 function aStarScore(candidate, heuristic) {
@@ -332,7 +336,7 @@ function resetVisuals() {
   stepCount.textContent = "-";
   visitedCount.textContent = "-";
   routeCount.textContent = "-";
-  resultNote.textContent = "";
+  updateAlgorithmNote();
   updateKnownRoute();
 }
 
@@ -448,7 +452,6 @@ function hillClimbing() {
   const visited = [];
   const seen = new Set();
   const path = [start];
-  const heuristic = getHeuristic(state.goal);
   let current = start;
 
   while (current) {
@@ -459,14 +462,9 @@ function hillClimbing() {
       return { path, visited, routesEvaluated: null };
     }
 
-    const next = getNeighbors(current)
+    const next = [...getNeighbors(current)]
       .filter((edge) => !seen.has(edge.to))
-      .sort(
-        (a, b) =>
-          localHillScore(a, heuristic) - localHillScore(b, heuristic) ||
-          nodes[a.to].h - nodes[b.to].h ||
-          a.time - b.time,
-      )[0];
+      .sort(compareHillCandidates)[0];
 
     if (!next) break;
     path.push(next.to);
@@ -484,7 +482,7 @@ function aStar() {
   const open = [{ node: start, path: [start], i: 0, from: null }];
   const bestCost = new Map([[start, 0]]);
   const visited = [];
-  const heuristic = getHeuristic(state.goal);
+  const heuristic = getAStarHeuristic(state.goal);
 
   while (open.length) {
     open.sort((a, b) => aStarScore(a, heuristic) - aStarScore(b, heuristic));
@@ -521,13 +519,17 @@ const algorithms = {
 
 const algorithmNotes = {
   astar:
-    "A* calcula f(n) = i(n) + j(n). Donde i(n) es el tiempo acumulado y j(n) es la heuristica: minimo numero de tramos restantes hasta el destino seleccionado.",
+    "A* calcula f(n) = i(n) + j(n). Donde i(n) es el tiempo acumulado y j(n) es la heuristica: minimo numero de nodos restantes hasta el destino seleccionado.",
   exhaustive:
     "La busqueda exhaustiva compara todas las rutas completas. Encuentra la optima, pero revisa mas posibilidades.",
   bfs: "BFS busca por niveles y se detiene al llegar al destino. En este grafo minimiza nodos en la ruta, no tiempo.",
   dfs: "DFS baja por la primera rama disponible hasta encontrar el destino. Aqui encuentra A -> B -> C -> D -> E -> F y se detiene, aunque no sea la ruta mas rapida.",
-  hill: "Hill Climbing elige el mejor siguiente paso local. Puede coincidir con la ruta optima, pero no lo garantiza.",
+  hill: "Hill Climbing sin reinicio elige el tramo inmediato con menor tiempo. Puede avanzar hacia un camino que no llegue al destino porque no mira el costo restante ni vuelve a probar alternativas.",
 };
+
+function updateAlgorithmNote() {
+  resultNote.textContent = algorithmNotes[state.selectedAlgorithm] || "";
+}
 
 function measureAlgorithm(algorithm) {
   let result = null;
@@ -543,8 +545,7 @@ function measureAlgorithm(algorithm) {
     ? result.visited.length * 0.4
     : 0;
 
-  result.calculationMs =
-    measuredMs + completeRouteCost + exhaustiveReviewCost;
+  result.calculationMs = measuredMs + completeRouteCost + exhaustiveReviewCost;
   return result;
 }
 
@@ -566,7 +567,7 @@ async function animateResult(result) {
     stepCount.textContent = "-";
     visitedCount.textContent = String(result.visited.length);
     routeCount.textContent = result.routesEvaluated ?? "-";
-    resultNote.textContent = algorithmNotes[state.selectedAlgorithm] || "";
+    updateAlgorithmNote();
     return;
   }
 
@@ -577,7 +578,7 @@ async function animateResult(result) {
   stepCount.textContent = String(result.path.length);
   visitedCount.textContent = String(result.visited.length);
   routeCount.textContent = result.routesEvaluated ?? "-";
-  resultNote.textContent = algorithmNotes[state.selectedAlgorithm] || "";
+  updateAlgorithmNote();
 }
 
 function runSearch() {
@@ -590,6 +591,7 @@ function runSearch() {
 
 algorithmSelect.addEventListener("change", (event) => {
   state.selectedAlgorithm = event.target.value;
+  updateAlgorithmNote();
 });
 
 goalSelect.addEventListener("change", (event) => {

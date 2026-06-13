@@ -39,7 +39,7 @@ Scenario: Datos incompletos
 - Implementar busqueda por profundidad DFS.
 - Implementar busqueda por anchura BFS.
 - Implementar busqueda exhaustiva para mapas pequenos.
-- Implementar Hill Climbing usando una evaluacion local: tiempo hacia el siguiente nodo + nodos restantes estimados.
+- Implementar Hill Climbing sin reinicio usando una evaluacion local: tiempo del tramo inmediato.
 - Implementar A* usando la formula `f(n) = g(n) + h(n)`.
 - Calcular la ruta mas rapida desde la ubicacion actual hasta el destino.
 - Mostrar ruta sugerida, tiempo estimado y puntos revisados.
@@ -56,7 +56,7 @@ Subtemas:
 - Busqueda por profundidad.
 - Busqueda por anchura.
 - Busqueda exhaustiva.
-- Busqueda con Hill Climbing.
+- Busqueda con Hill Climbing sin reinicio.
 - Busqueda con A*.
 
 ## Idea del proyecto
@@ -148,7 +148,7 @@ graph LR
   C -- "1 min" --> J["J: Av. Jorge Chavez"]
   J -- "1 min" --> K["K: Pierola"]
   K -- "1 min" --> E
-  B -- "1 min" --> G["G: Tarapaca"]
+  B -- "3 min" --> G["G: Tarapaca"]
   G -- "1 min" --> H["H: Av. La Marina"]
   H -- "1 min" --> I["I: Palacio Viejo"]
   I -- "1 min" --> E
@@ -176,7 +176,7 @@ El grafo no incluye atajos directos entre puntos no consecutivos. Cada conexion 
 | C | J | Salaverry -> Av. Jorge Chavez | 1 min | medio |
 | J | K | Av. Jorge Chavez -> Pierola | 1 min | medio |
 | K | E | Pierola -> Santo Domingo | 1 min | bajo |
-| B | G | Av. Parra -> Tarapaca | 1 min | bajo |
+| B | G | Av. Parra -> Tarapaca | 3 min | bajo |
 | G | H | Tarapaca -> Av. La Marina | 1 min | bajo |
 | H | I | Av. La Marina -> Palacio Viejo | 1 min | bajo |
 | I | E | Palacio Viejo -> Santo Domingo | 1 min | bajo |
@@ -187,7 +187,7 @@ El grafo no incluye atajos directos entre puntos no consecutivos. Cada conexion 
 | ---- | --------- | -----: | ---------------- |
 | Ruta optima | A -> B -> C -> J -> K -> E -> F | 6 min | medio |
 | Ruta por Alvarez Thomas | A -> B -> C -> D -> E -> F | 7 min | medio |
-| Ruta alternativa con menos trafico | A -> B -> G -> H -> I -> E -> F | 6 min | bajo |
+| Ruta alternativa con menos trafico | A -> B -> G -> H -> I -> E -> F | 8 min | bajo |
 
 ## Estados del problema
 
@@ -290,28 +290,28 @@ Limitacion:
 Solo es razonable en mapas pequenos.
 ```
 
-## Hill Climbing
+## Hill Climbing sin reinicio
 
-Hill Climbing elige el siguiente movimiento que parece mejor en ese momento.
+Hill Climbing sin reinicio elige el siguiente movimiento que parece mejor en ese momento.
 
-Heuristica posible:
-
-```txt
-minimo numero de nodos restantes hasta el destino
-```
-
-En la app se usa una evaluacion local:
+Criterio local usado en la app:
 
 ```txt
-puntaje local = tiempo hacia el siguiente nodo + estimacion restante del vecino
+puntaje local = tiempo del tramo inmediato
 ```
 
-Esto evita elegir una calle solo por una decision visual, ignorando que puede tener mucho tiempo de recorrido.
+En cada nodo, Hill Climbing sin reinicio compara solo las calles que salen desde el punto actual:
+
+```txt
+elige el tramo disponible con menor tiempo
+```
+
+Esto muestra la idea de optimo local: la decision parece buena en ese momento, pero no considera lo que falta despues.
 
 Limitacion:
 
 ```txt
-Puede encontrar una ruta razonable, pero no garantiza la ruta optima porque no compara todo el camino acumulado.
+Puede encontrar una ruta razonable, pero no garantiza llegar al destino ni encontrar la ruta optima porque no compara el costo restante ni vuelve a probar alternativas.
 ```
 
 ## A*
@@ -328,11 +328,11 @@ Donde:
 
 ```txt
 g(n) = minutos ya recorridos
-h(n) = minimo numero de nodos restantes hasta F
+h(n) = minimo numero de nodos restantes hasta el destino seleccionado
 f(n) = prioridad de esa ruta
 ```
 
-Esta heuristica funciona para el ejemplo porque cada conexion entre nodos cuesta al menos 1 minuto. Por eso el numero de nodos restantes es una estimacion optimista del tiempo que falta.
+Esta heuristica de A* funciona para el ejemplo porque cada conexion entre nodos cuesta al menos 1 minuto. Por eso el numero de nodos restantes es una estimacion optimista del tiempo que falta.
 
 Ejemplo:
 
@@ -353,7 +353,7 @@ Decision:
 priorizar C -> J
 ```
 
-Heuristica usada en el ejemplo:
+Heuristica usada por A* en el ejemplo con destino F:
 
 | Nodo | h(n): nodos minimos restantes hasta F |
 | ---- | -------------------------------------: |
@@ -405,7 +405,7 @@ Tiempo estimado:
 | A* | Usa costo real y estimacion | Mejor opcion para ruta optima |
 | BFS | Busca menos nodos | Util si todas las conexiones entre nodos cuestan igual |
 | DFS | Explora caminos completos | Bueno para ver retroceso y ramas |
-| Hill Climbing | Elige el mejor siguiente paso segun una evaluacion local | Rapido, pero no garantiza la ruta optima |
+| Hill Climbing sin reinicio | Elige el tramo inmediato con menor tiempo | Rapido, pero no garantiza llegar al destino ni encontrar la ruta optima |
 | Exhaustiva | Compara todas las rutas | Encuentra la mejor ruta, pero tarda mas en calcular |
 
 ## Alcance realista
@@ -447,7 +447,7 @@ Este proyecto permite explicar:
 - Costos.
 - Ruta candidata.
 - Ruta final.
-- Heuristica.
+- Heuristica en A*.
 - Comparacion entre algoritmos.
 
 ## Nombre sugerido de la app
@@ -473,22 +473,21 @@ En este proyecto:
 
 ```txt
 g(n) = minutos acumulados desde A
-h(n) = minimo numero de nodos restantes hasta F
+h(n) = minimo numero de nodos restantes hasta el destino seleccionado
 ```
 
-Con los datos actuales hay dos rutas que empatan en tiempo total:
+Con los datos actuales, la ruta de menor tiempo hacia F es:
 
 ```txt
 A -> B -> C -> J -> K -> E -> F = 6 minutos
-A -> B -> G -> H -> I -> E -> F = 6 minutos
 ```
 
-La app muestra como Ruta optima:
+La alternativa por G, H e I queda como ruta de menor trafico, pero no como la de menor tiempo:
 
 ```txt
-A -> B -> C -> J -> K -> E -> F
+A -> B -> G -> H -> I -> E -> F = 8 minutos
 ```
 
 La busqueda exhaustiva tambien puede encontrar la ruta optima porque revisa todas las rutas posibles. Sin embargo, no suele ser la opcion mas rapida para calcularla, especialmente cuando el mapa crece.
 
-DFS, BFS, busqueda exhaustiva y Hill Climbing sirven para comparar comportamientos, pero para buscar una ruta optima en un mapa con costos, **A\*** es la mejor opcion didactica.
+DFS, BFS, busqueda exhaustiva y Hill Climbing sin reinicio sirven para comparar comportamientos, pero para buscar una ruta optima en un mapa con costos, **A\*** es la mejor opcion didactica.
