@@ -1,30 +1,30 @@
 const nodes = {
-  A: { name: "UTP nueva sede", x: 90, y: 310 },
-  B: { name: "Av. Parra", x: 230, y: 310 },
-  C: { name: "Salaverry", x: 390, y: 215 },
-  D: { name: "Alvarez Thomas", x: 600, y: 105 },
-  E: { name: "Santo Domingo", x: 850, y: 300 },
-  F: { name: "Plaza de Armas", x: 1010, y: 300 },
-  G: { name: "Tarapaca", x: 390, y: 500 },
-  H: { name: "Av. La Marina", x: 600, y: 500 },
-  I: { name: "Palacio Viejo", x: 820, y: 485 },
-  J: { name: "Av. Jorge Chavez", x: 600, y: 310 },
-  K: { name: "Pierola", x: 740, y: 390 },
+  A: { name: "UTP nueva sede", x: 80, y: 435, scoreLabel: "below" },
+  B: { name: "Av. Parra", x: 290, y: 435, scoreLabel: "below" },
+  C: { name: "Salaverry", x: 545, y: 250 },
+  D: { name: "Alvarez Thomas", x: 810, y: 80 },
+  E: { name: "Santo Domingo", x: 1140, y: 385, scoreLabel: "below" },
+  F: { name: "Plaza de Armas", x: 1355, y: 385, scoreLabel: "below" },
+  G: { name: "Tarapaca", x: 545, y: 750 },
+  H: { name: "Av. La Marina", x: 810, y: 750 },
+  I: { name: "Palacio Viejo", x: 1090, y: 715 },
+  J: { name: "Av. Jorge Chavez", x: 810, y: 435 },
+  K: { name: "Pierola", x: 985, y: 565, scoreLabel: "below" },
 };
 
 const edges = [
-  { from: "A", to: "B", time: 1, traffic: "bajo", label: { x: 160, y: 272 } },
-  { from: "B", to: "C", time: 1, traffic: "medio", label: { x: 305, y: 248 } },
-  { from: "C", to: "D", time: 3, traffic: "medio", label: { x: 485, y: 130 } },
-  { from: "D", to: "E", time: 1, traffic: "bajo", label: { x: 735, y: 155 } },
-  { from: "E", to: "F", time: 1, traffic: "medio", label: { x: 930, y: 260 } },
-  { from: "C", to: "J", time: 1, traffic: "medio", label: { x: 492, y: 278 } },
-  { from: "J", to: "K", time: 1, traffic: "medio", label: { x: 668, y: 368 } },
-  { from: "K", to: "E", time: 1, traffic: "bajo", label: { x: 805, y: 360 } },
-  { from: "B", to: "G", time: 1, traffic: "bajo", label: { x: 305, y: 440 } },
-  { from: "G", to: "H", time: 1, traffic: "bajo", label: { x: 495, y: 540 } },
-  { from: "H", to: "I", time: 1, traffic: "bajo", label: { x: 710, y: 530 } },
-  { from: "I", to: "E", time: 1, traffic: "bajo", label: { x: 880, y: 410 } },
+  { from: "A", to: "B", time: 1, traffic: "bajo", label: { x: 185, y: 390 } },
+  { from: "B", to: "C", time: 1, traffic: "medio", label: { x: 415, y: 330 } },
+  { from: "C", to: "D", time: 3, traffic: "medio", label: { x: 670, y: 140 } },
+  { from: "D", to: "E", time: 1, traffic: "bajo", label: { x: 975, y: 170 } },
+  { from: "E", to: "F", time: 1, traffic: "medio", label: { x: 1248, y: 340 } },
+  { from: "C", to: "J", time: 1, traffic: "medio", label: { x: 670, y: 320 } },
+  { from: "J", to: "K", time: 1, traffic: "medio", label: { x: 900, y: 500 } },
+  { from: "K", to: "E", time: 1, traffic: "bajo", label: { x: 1070, y: 535 } },
+  { from: "B", to: "G", time: 1, traffic: "bajo", label: { x: 415, y: 610 } },
+  { from: "G", to: "H", time: 1, traffic: "bajo", label: { x: 675, y: 805 } },
+  { from: "H", to: "I", time: 1, traffic: "bajo", label: { x: 955, y: 795 } },
+  { from: "I", to: "E", time: 1, traffic: "bajo", label: { x: 1140, y: 575 } },
 ];
 
 const start = "A";
@@ -141,6 +141,22 @@ function aStarScore(candidate, heuristic) {
   return i + j;
 }
 
+function aStarScoreDetails(candidate, heuristic) {
+  const i = candidate.i;
+  const j = heuristic[candidate.node];
+
+  return {
+    i,
+    j,
+    f: i + j,
+  };
+}
+
+function formatScoreValue(value) {
+  if (!Number.isFinite(value)) return "infinito";
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
 function pathEdges(path) {
   const pairs = [];
   for (let index = 0; index < path.length - 1; index += 1) {
@@ -157,6 +173,17 @@ function lineEndpoint(from, to, offset) {
   return {
     x: from.x + (dx / length) * offset,
     y: from.y + (dy / length) * offset,
+  };
+}
+
+function aStarScoreLabelPosition(node) {
+  const placeBelow = node.scoreLabel === "below" || node.y < 85;
+
+  return {
+    x: node.x,
+    firstLineY: node.y + (placeBelow ? 55 : -64),
+    secondLineY: node.y + (placeBelow ? 72 : -48),
+    bgY: node.y + (placeBelow ? 42 : -77),
   };
 }
 
@@ -316,6 +343,47 @@ function drawGraph() {
     text.textContent = key;
     group.appendChild(text);
 
+    const scorePosition = aStarScoreLabelPosition(node);
+    const scoreGroup = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "g",
+    );
+    scoreGroup.setAttribute("id", `astar-score-${key}`);
+    scoreGroup.setAttribute("class", "astar-score");
+    scoreGroup.setAttribute("aria-hidden", "true");
+
+    const scoreBg = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "rect",
+    );
+    scoreBg.setAttribute("class", "astar-score-bg");
+    scoreBg.setAttribute("x", scorePosition.x - 70);
+    scoreBg.setAttribute("y", scorePosition.bgY);
+    scoreBg.setAttribute("width", "140");
+    scoreBg.setAttribute("height", "44");
+    scoreBg.setAttribute("rx", "6");
+    scoreGroup.appendChild(scoreBg);
+
+    const scoreFormula = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "text",
+    );
+    scoreFormula.setAttribute("class", "astar-score-text astar-score-formula");
+    scoreFormula.setAttribute("x", scorePosition.x);
+    scoreFormula.setAttribute("y", scorePosition.firstLineY);
+    scoreGroup.appendChild(scoreFormula);
+
+    const scoreResult = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "text",
+    );
+    scoreResult.setAttribute("class", "astar-score-text astar-score-result");
+    scoreResult.setAttribute("x", scorePosition.x);
+    scoreResult.setAttribute("y", scorePosition.secondLineY);
+    scoreGroup.appendChild(scoreResult);
+
+    group.appendChild(scoreGroup);
+
     nodeLayer.appendChild(group);
   });
 
@@ -330,6 +398,9 @@ function resetVisuals() {
   svg.querySelectorAll(".edge").forEach((edge) => {
     edge.setAttribute("marker-end", "url(#arrowDefault)");
   });
+  svg.querySelectorAll(".astar-score").forEach((score) => {
+    score.classList.remove("visible");
+  });
   routeText.textContent = "Sin calcular";
   timeText.textContent = "-";
   calcTimeText.textContent = "-";
@@ -340,9 +411,25 @@ function resetVisuals() {
   updateKnownRoute();
 }
 
-function setVisited(node, previousNode = null) {
+function showAStarScore(node, score) {
+  if (!score) return;
+
+  const scoreEl = document.getElementById(`astar-score-${node}`);
+  if (!scoreEl) return;
+
+  const i = formatScoreValue(score.i);
+  const j = formatScoreValue(score.j);
+  const f = formatScoreValue(score.f);
+  scoreEl.querySelector(".astar-score-formula").textContent =
+    `f(${node}) = ${i} + ${j}`;
+  scoreEl.querySelector(".astar-score-result").textContent = `f(${node}) = ${f}`;
+  scoreEl.classList.add("visible");
+}
+
+function setVisited(node, previousNode = null, score = null) {
   const nodeEl = document.getElementById(`node-${node}`);
   nodeEl?.classList.add("visited");
+  showAStarScore(node, score);
 
   if (previousNode) {
     const edgeEl = document.getElementById(
@@ -487,10 +574,19 @@ function aStar() {
   while (open.length) {
     open.sort((a, b) => aStarScore(a, heuristic) - aStarScore(b, heuristic));
     const current = open.shift();
-    visited.push({ node: current.node, from: current.from });
+    visited.push({
+      node: current.node,
+      from: current.from,
+      score: aStarScoreDetails(current, heuristic),
+    });
 
     if (current.node === state.goal) {
-      return { path: current.path, visited, routesEvaluated: null };
+      return {
+        path: current.path,
+        visited,
+        routesEvaluated: null,
+        showAStarScores: true,
+      };
     }
 
     getNeighbors(current.node).forEach((edge) => {
@@ -506,7 +602,7 @@ function aStar() {
     });
   }
 
-  return { path: [], visited, routesEvaluated: null };
+  return { path: [], visited, routesEvaluated: null, showAStarScores: true };
 }
 
 const algorithms = {
@@ -555,7 +651,11 @@ async function animateResult(result) {
   for (let index = 0; index < result.visited.length; index += 1) {
     if (token !== state.animationToken) return;
     const step = result.visited[index];
-    setVisited(step.node, step.from);
+    setVisited(
+      step.node,
+      step.from,
+      result.showAStarScores ? step.score : null,
+    );
     await wait(850);
   }
 
