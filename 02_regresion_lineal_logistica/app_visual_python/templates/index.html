@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regresion lineal y logistica</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje supervisado</p>
+            <h1 id="app-title">Regresion lineal y logistica</h1>
+          </div>
+          <div class="model-summary" aria-label="Resumen del modelo">
+            <span id="modelBadge">Clasificacion</span>
+            <strong id="targetBadge">Compra o no compra</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles del ejemplo">
+          <div class="field model-field">
+            <label for="problemType">Ejemplo</label>
+            <select id="problemType">
+              <option value="logistic">
+                Regresion logistica: productos vistos -> compra
+              </option>
+              <option value="linear">
+                Regresion lineal: anuncios -> ingresos
+              </option>
+            </select>
+          </div>
+
+          <div class="field range-field">
+            <label id="xLabel" for="xRange">Productos vistos</label>
+            <div class="range-row">
+              <input id="xRange" type="range" min="0" max="15" step="1" />
+              <input
+                id="xNumber"
+                class="number-input"
+                type="number"
+                min="0"
+                max="15"
+                step="1"
+                inputmode="decimal"
+              />
+            </div>
+          </div>
+
+          <button id="resetExample" class="ghost-button" type="button">
+            Reiniciar
+          </button>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Grafica del modelo">
+            <div class="chart-heading">
+              <div>
+                <h2 id="chartTitle">Regresion logistica</h2>
+                <p id="chartSubtitle">
+                  h(x) estima la probabilidad de compra.
+                </p>
+              </div>
+              <span id="equationPill" class="equation-pill">
+                h(x) = sigmoid(w_0 + w_1x)
+              </span>
+            </div>
+
+            <svg
+              id="modelChart"
+              class="model-chart"
+              viewBox="0 0 920 560"
+              role="img"
+              aria-label="Grafica del ejemplo seleccionado"
+            ></svg>
+          </section>
+
+          <aside class="side-panel" aria-label="Resultado de prediccion">
+            <section class="panel-section">
+              <h2>Prediccion</h2>
+              <dl class="metric-list">
+                <div>
+                  <dt id="inputMetricLabel">x: productos vistos</dt>
+                  <dd id="inputMetric">-</dd>
+                </div>
+                <div>
+                  <dt id="outputMetricLabel">h(x)</dt>
+                  <dd id="outputMetric">-</dd>
+                </div>
+                <div>
+                  <dt id="decisionMetricLabel">Resultado esperado</dt>
+                  <dd id="decisionMetric">-</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel-section formula-section">
+              <h2>Formula aplicada</h2>
+              <p id="formulaLine" class="formula-line"></p>
+              <p id="calculationLine" class="calculation-line"></p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Variables</h2>
+              <dl class="variable-list">
+                <div>
+                  <dt>x</dt>
+                  <dd id="xDescription">Numero de productos vistos</dd>
+                </div>
+                <div>
+                  <dt>y</dt>
+                  <dd id="yDescription">Compro o no compro</dd>
+                </div>
+              </dl>
+            </section>
+          </aside>
+        </section>
+
+        <section class="data-panel" aria-label="Datos de entrenamiento">
+          <div class="data-heading">
+            <h2>Datos de ejemplo</h2>
+            <p id="dataNote">
+              Cada punto representa una visita de usuario.
+            </p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th id="tableXHeader">x</th>
+                  <th id="tableYHeader">y</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
