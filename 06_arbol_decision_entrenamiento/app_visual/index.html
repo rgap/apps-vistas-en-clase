@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entrenar árbol de decisión</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje supervisado</p>
+            <h1 id="app-title">Entrenar árbol de decisión</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>Clasificación</span>
+            <strong>Cortes aprendidos</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles de entrenamiento">
+          <div class="field">
+            <label for="criterionSelect">Método para elegir cortes</label>
+            <select id="criterionSelect">
+              <option value="gini" selected>Gini</option>
+              <option value="entropy">Entropía</option>
+              <option value="error">Error de clasificación</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="maxDepthInput">Profundidad máxima</label>
+            <input id="maxDepthInput" type="range" min="1" max="5" step="1" value="3" />
+            <output id="maxDepthOutput" for="maxDepthInput">3</output>
+          </div>
+
+          <div class="field">
+            <label for="minLeafInput">Mínimo por hoja</label>
+            <input id="minLeafInput" type="range" min="1" max="8" step="1" value="3" />
+            <output id="minLeafOutput" for="minLeafInput">3</output>
+          </div>
+
+          <div class="field">
+            <label for="clickInput">Clics de la sesión nueva</label>
+            <input
+              id="clickInput"
+              type="range"
+              min="0"
+              max="25"
+              step="0.1"
+              value="12"
+            />
+            <output id="clickOutput" for="clickInput">12</output>
+          </div>
+
+          <div class="field">
+            <label for="durationInput">Duración en minutos</label>
+            <input
+              id="durationInput"
+              type="range"
+              min="0"
+              max="25"
+              step="0.1"
+              value="13"
+            />
+            <output id="durationOutput" for="durationInput">13</output>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Regiones entrenadas">
+            <div class="chart-heading">
+              <div>
+                <p class="stage-label">Datos S27 · sesiones web</p>
+                <h2>Regiones aprendidas por entrenamiento</h2>
+                <p>
+                  El árbol prueba cortes en clics y duración, y conserva los
+                  que reducen más la impureza.
+                </p>
+              </div>
+              <span class="formula-pill">h<sub>T</sub>(x)</span>
+            </div>
+
+            <svg
+              id="trainingChart"
+              class="training-chart"
+              viewBox="0 0 920 600"
+              role="img"
+              aria-label="Regiones aprendidas por un arbol de decision"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot abandon"></i> Abandonar</span>
+              <span><i class="dot browse"></i> Seguir navegando</span>
+              <span><i class="dot cart"></i> Agregar al carrito</span>
+              <span><i class="dot buy"></i> Comprar</span>
+              <span><i class="line-sample"></i> Corte aprendido</span>
+              <span><i class="probe-sample"></i> Sesión nueva</span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Resultado del entrenamiento">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Predicción</h2>
+                <span id="statusBadge" class="status-badge buy">Comprar</span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Sesión nueva</dt>
+                  <dd id="probeValue">12 clics, 13 min</dd>
+                </div>
+                <div>
+                  <dt>El árbol dice</dt>
+                  <dd id="predictionValue" class="main-metric">Comprar</dd>
+                </div>
+              </dl>
+              <p id="pathText" class="microcopy">
+                Ruta pendiente.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Entrenamiento</h2>
+              <dl class="metric-list compact-metrics">
+                <div>
+                  <dt>Criterio</dt>
+                  <dd id="criterionValue">Gini</dd>
+                </div>
+                <div>
+                  <dt>Primer corte</dt>
+                  <dd id="rootSplitValue">-</dd>
+                </div>
+                <div>
+                  <dt>Hojas</dt>
+                  <dd id="leafCountValue">-</dd>
+                </div>
+                <div>
+                  <dt>Precisión entrenamiento</dt>
+                  <dd id="accuracyValue">-</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel-section tree-section">
+              <h2>Árbol entrenado</h2>
+              <div id="treeContainer" class="trained-tree"></div>
+            </section>
+
+            <section class="panel-section">
+              <h2>Métodos simples</h2>
+              <div class="concept-list">
+                <div class="concept-item">
+                  <span class="concept-term">Gini</span>
+                  <p>Penaliza nodos con clases mezcladas.</p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">Entropía</span>
+                  <p>Mide desorden usando información.</p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">Error</span>
+                  <p>Mira la proporción que no pertenece a la clase mayoritaria.</p>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

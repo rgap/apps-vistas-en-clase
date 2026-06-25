@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SVM simple</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje supervisado</p>
+            <h1 id="app-title">SVM simple</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>Clasificación</span>
+            <strong>Aprender a separar puntos</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles del modelo">
+          <div class="field">
+            <label for="modelPreset">Elige cómo quieres separar</label>
+            <select id="modelPreset">
+              <option value="linear-c01" selected>
+                Recta suave
+              </option>
+              <option value="linear-c10">Recta estricta</option>
+              <option value="rbf-c1">Curva flexible</option>
+            </select>
+          </div>
+
+          <div class="preset-copy">
+            <p id="presetSummary" class="preset-summary">
+              Usa una línea recta y prefiere una separación simple.
+            </p>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Visualización de SVM">
+            <div class="chart-heading">
+              <div>
+                <p class="stage-label">Datos de ejemplo · clics y duración</p>
+                <h2 id="chartTitle">Abandonar o comprar</h2>
+                <p id="chartSubtitle">
+                  Azul: abandonar. Rojo: comprar. Amarillo: sesión nueva.
+                </p>
+              </div>
+            </div>
+
+            <svg
+              id="svmChart"
+              class="svm-chart"
+              viewBox="0 0 920 600"
+              role="img"
+              aria-label="Frontera de decisión de una SVM en dos dimensiones"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot abandon"></i> Abandonar</span>
+              <span><i class="dot buy"></i> Comprar</span>
+              <span><i class="line-sample boundary"></i> Frontera</span>
+              <span><i class="probe-sample"></i> Sesión nueva</span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Estado del modelo">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Predicción</h2>
+                <span id="statusBadge" class="status-badge buy">Comprar</span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Punto amarillo</dt>
+                  <dd id="probeValue">clics = 4.8, duración = 4.6</dd>
+                </div>
+                <div>
+                  <dt>La SVM dice</dt>
+                  <dd id="predictionValue" class="main-metric">Comprar</dd>
+                </div>
+              </dl>
+              <p id="predictionHelp" class="microcopy">
+                La respuesta depende del lado donde cae el punto amarillo.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Qué está pasando</h2>
+              <p id="explanationText" class="explanation">
+                La SVM dibuja una frontera para separar los puntos azules de
+                los rojos.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Hiperparámetros</h2>
+              <p class="definition">
+                Son perillas que movemos antes de entrenar.
+              </p>
+              <div class="concept-list">
+                <div class="concept-item">
+                  <span class="concept-term">Kernel</span>
+                  <p id="kernelMeaning">
+                    Forma de la frontera.
+                  </p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">C</span>
+                  <p id="cMeaning">
+                    Qué tan exigente es.
+                  </p>
+                </div>
+                <div id="gammaItem" class="concept-item" hidden>
+                  <span class="concept-term">gamma</span>
+                  <p id="gammaMeaning">
+                    Qué tanto se curva.
+                  </p>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

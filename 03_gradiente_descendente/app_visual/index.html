@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gradiente descendente: funciones unimodales y multimodales</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje supervisado</p>
+            <h1 id="app-title">Gradiente descendente</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>Optimización</span>
+            <strong>Mínimo global y local</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles del ejemplo">
+          <div class="scenario-switch" aria-label="Función del ejemplo">
+            <button
+              class="scenario-button active"
+              data-mode="1d-unimodal"
+              type="button"
+            >
+              1D · Unimodal
+            </button>
+            <button
+              class="scenario-button"
+              data-mode="1d-multimodal"
+              type="button"
+            >
+              1D · Multimodal
+            </button>
+            <button
+              class="scenario-button"
+              data-mode="2d-unimodal"
+              type="button"
+            >
+              2D · Unimodal
+            </button>
+            <button
+              class="scenario-button"
+              data-mode="2d-multimodal"
+              type="button"
+            >
+              2D · Multimodal
+            </button>
+          </div>
+
+          <div class="field">
+            <label for="learningRate">Velocidad de aprendizaje</label>
+            <select id="learningRate">
+              <option value="short">Pasos cortos</option>
+              <option value="balanced" selected>Pasos equilibrados</option>
+              <option value="large">Pasos grandes</option>
+            </select>
+          </div>
+
+          <div class="button-group">
+            <button id="stepButton" class="primary-button" type="button">
+              Siguiente paso
+            </button>
+            <button id="runButton" class="secondary-button" type="button">
+              Ejecutar
+            </button>
+            <button id="resetButton" class="ghost-button" type="button">
+              Elegir otro inicio
+            </button>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Visualización del descenso">
+            <div class="chart-heading">
+              <div>
+                <p id="stageLabel" class="stage-label">
+                  Una dimensión · Función unimodal
+                </p>
+                <h2 id="chartTitle">Una función con un solo mínimo</h2>
+                <p id="chartSubtitle">
+                  Haz clic sobre la gráfica para seleccionar el punto inicial.
+                </p>
+              </div>
+              <span id="formulaPill" class="formula-pill">
+                L(w) = (w - 2)² + 1
+              </span>
+            </div>
+
+            <svg
+              id="gradientChart"
+              class="gradient-chart selecting"
+              viewBox="0 0 920 600"
+              role="img"
+              aria-label="Recorrido del gradiente descendente"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot start"></i> Inicio</span>
+              <span><i class="dot route"></i> Iteraciones</span>
+              <span><i class="dot current"></i> Punto actual</span>
+              <span><i class="dot minimum"></i> Mínimo global</span>
+              <span id="localLegend" class="hidden">
+                <i class="dot local-minimum"></i> Mínimo local
+              </span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Estado del algoritmo">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Estado</h2>
+                <span id="statusBadge" class="status-badge waiting">
+                  Selecciona inicio
+                </span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Iteración</dt>
+                  <dd id="iterationValue">-</dd>
+                </div>
+                <div>
+                  <dt id="positionLabel">Valor de w</dt>
+                  <dd id="positionValue">-</dd>
+                </div>
+                <div>
+                  <dt>Pérdida L</dt>
+                  <dd id="lossValue" class="main-metric">-</dd>
+                </div>
+                <div>
+                  <dt id="gradientLabel">Gradiente</dt>
+                  <dd id="gradientValue">-</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel-section update-section">
+              <h2>Actualización</h2>
+              <p id="updateFormula" class="update-formula">
+                w nuevo = w - α × gradiente
+              </p>
+              <p id="updateCalculation" class="update-calculation">
+                Primero selecciona un punto inicial en la gráfica.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2 id="explanationTitle">Función unimodal</h2>
+              <p id="explanationText" class="explanation">
+                Tiene un solo mínimo. Desde cualquier inicio, el descenso busca
+                el mismo mínimo global.
+              </p>
+              <p class="selection-note">
+                Al cambiar de función o elegir otro inicio, haz clic en la
+                gráfica antes de ejecutar el algoritmo.
+              </p>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

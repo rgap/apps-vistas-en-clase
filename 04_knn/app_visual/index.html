@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KNN: vecinos más cercanos</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje supervisado</p>
+            <h1 id="app-title">KNN: vecinos más cercanos</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>Clasificación</span>
+            <strong>Votar con vecinos</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles de KNN">
+          <div class="field range-field">
+            <label for="kValue">Número de vecinos k</label>
+            <input id="kValue" type="range" min="1" max="15" step="2" value="9" />
+            <div class="range-row" aria-hidden="true">
+              <span>1</span>
+              <output id="kOutput" for="kValue">9</output>
+              <span>15</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="distanceMetric">Distancia</label>
+            <select id="distanceMetric">
+              <option value="euclidean" selected>Euclidiana</option>
+              <option value="manhattan">Manhattan</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="clickInput">Clics de la sesión nueva</label>
+            <input
+              id="clickInput"
+              type="range"
+              min="0"
+              max="25"
+              step="0.1"
+              value="11.2"
+            />
+            <output id="clickOutput" for="clickInput">11.2</output>
+          </div>
+
+          <div class="field">
+            <label for="durationInput">Duración en minutos</label>
+            <input
+              id="durationInput"
+              type="range"
+              min="0"
+              max="25"
+              step="0.1"
+              value="10.8"
+            />
+            <output id="durationOutput" for="durationInput">10.8</output>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Visualización de KNN">
+            <div class="chart-heading">
+              <div>
+                <p class="stage-label">Datos S27 · sesiones web</p>
+                <h2>Siguiente acción del usuario</h2>
+                <p id="chartSubtitle">
+                  La sesión amarilla consulta sus vecinos históricos más cercanos.
+                </p>
+              </div>
+              <span id="modelFormula" class="formula-pill">h(D,k,d)(x)</span>
+            </div>
+
+            <svg
+              id="knnChart"
+              class="knn-chart"
+              viewBox="0 0 920 600"
+              role="img"
+              aria-label="Puntos historicos y vecinos mas cercanos"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot abandon"></i> Abandonar</span>
+              <span><i class="dot browse"></i> Seguir navegando</span>
+              <span><i class="dot cart"></i> Agregar al carrito</span>
+              <span><i class="dot buy"></i> Comprar</span>
+              <span><i class="probe-sample"></i> Sesión nueva</span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Resultado de KNN">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Predicción</h2>
+                <span id="statusBadge" class="status-badge buy">Comprar</span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Sesión nueva</dt>
+                  <dd id="probeValue">11.2 clics, 10.8 min</dd>
+                </div>
+                <div>
+                  <dt>Mayoría de votos</dt>
+                  <dd id="predictionValue" class="main-metric">Comprar</dd>
+                </div>
+                <div>
+                  <dt>Vecino más cercano</dt>
+                  <dd id="nearestValue">-</dd>
+                </div>
+              </dl>
+              <p id="winnerReason" class="microcopy">
+                Con k = 9, Comprar recibe más votos que las demás clases.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Votación</h2>
+              <div id="votesList" class="votes-list"></div>
+            </section>
+
+            <section class="panel-section">
+              <h2>No aprende pesos</h2>
+              <p class="definition">
+                KNN no aprende pesos ni otros parámetros como una regresión o
+                una SVM. Conserva los datos y solo usamos hiperparámetros para
+                decidir cómo consulta vecinos.
+              </p>
+              <div class="concept-list">
+                <div class="concept-item">
+                  <span class="concept-term">k</span>
+                  <p id="kMeaning">Cantidad de vecinos que votan.</p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">Distancia</span>
+                  <p id="distanceMeaning">Cómo medimos cercanía.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel-section neighbors-section">
+              <h2>Vecinos consultados</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Clase</th>
+                      <th>Clics</th>
+                      <th>Min</th>
+                    </tr>
+                  </thead>
+                  <tbody id="neighborsTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
