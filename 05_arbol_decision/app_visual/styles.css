@@ -121,7 +121,7 @@ h2 {
 
 .control-panel {
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) minmax(210px, 1fr) minmax(250px, 0.85fr);
+  grid-template-columns: minmax(250px, max-content);
   align-items: end;
   gap: 14px;
   margin-bottom: 16px;

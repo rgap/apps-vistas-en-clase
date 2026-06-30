@@ -22,32 +22,6 @@
         </header>
 
         <section class="control-panel" aria-label="Controles del árbol">
-          <div class="field">
-            <label for="clickInput">Clics de la sesión nueva</label>
-            <input
-              id="clickInput"
-              type="range"
-              min="0"
-              max="25"
-              step="0.1"
-              value="12"
-            />
-            <output id="clickOutput" for="clickInput">12</output>
-          </div>
-
-          <div class="field">
-            <label for="durationInput">Duración en minutos</label>
-            <input
-              id="durationInput"
-              type="range"
-              min="0"
-              max="25"
-              step="0.1"
-              value="13"
-            />
-            <output id="durationOutput" for="durationInput">13</output>
-          </div>
-
           <div class="field compact-field">
             <span class="readonly-label">Cortes aprendidos</span>
             <div class="threshold-pills" aria-label="Cortes del árbol">
@@ -61,7 +35,6 @@
           <section class="chart-panel" aria-label="Regiones del árbol">
             <div class="chart-heading">
               <div>
-                <p class="stage-label">Datos S27 · sesiones web</p>
                 <h2>Cortes horizontales y verticales</h2>
                 <p>
                   El árbol divide el espacio con reglas simples y predice según
@@ -149,9 +122,7 @@
                   <div id="leafCart" class="tree-node leaf cart">
                     Agregar al carrito
                   </div>
-                  <div id="leafBuy" class="tree-node leaf buy">
-                    Comprar
-                  </div>
+                  <div id="leafBuy" class="tree-node leaf buy">Comprar</div>
                 </div>
               </div>
             </section>
@@ -159,8 +130,8 @@
             <section class="panel-section">
               <h2>Qué aprende</h2>
               <p class="definition">
-                El entrenamiento produce variables, puntos de corte, ramas y
-                una clase en cada hoja.
+                El entrenamiento produce variables, puntos de corte, ramas y una
+                clase en cada hoja.
               </p>
               <div class="concept-list">
                 <div class="concept-item">
@@ -177,10 +148,21 @@
             <section class="panel-section">
               <h2>Reglas</h2>
               <div class="rules-table">
-                <div><span>&lt; 10</span><span>&lt; 10</span><strong>Abandonar</strong></div>
-                <div><span>&lt; 10</span><span>≥ 10</span><strong>Seguir navegando</strong></div>
-                <div><span>≥ 10</span><span>&lt; 10</span><strong>Agregar al carrito</strong></div>
-                <div><span>≥ 10</span><span>≥ 10</span><strong>Comprar</strong></div>
+                <div>
+                  <span>&lt; 10</span><span>&lt; 10</span
+                  ><strong>Abandonar</strong>
+                </div>
+                <div>
+                  <span>&lt; 10</span><span>≥ 10</span
+                  ><strong>Seguir navegando</strong>
+                </div>
+                <div>
+                  <span>≥ 10</span><span>&lt; 10</span
+                  ><strong>Agregar al carrito</strong>
+                </div>
+                <div>
+                  <span>≥ 10</span><span>≥ 10</span><strong>Comprar</strong>
+                </div>
               </div>
             </section>
           </aside>

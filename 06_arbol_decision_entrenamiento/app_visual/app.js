@@ -30,12 +30,6 @@ const featureNames = {
   y: "duración",
 };
 
-const criterionLabels = {
-  gini: "Gini",
-  entropy: "Entropía",
-  error: "Error de clasificación",
-};
-
 const points = [];
 
 function addPoints(className, pairs) {
@@ -145,34 +139,28 @@ chart.plotWidth = chart.width - chart.margin.left - chart.margin.right;
 chart.plotHeight = chart.height - chart.margin.top - chart.margin.bottom;
 
 const state = {
-  criterion: "gini",
-  maxDepth: 3,
-  minLeaf: 3,
+  maxDepth: 2,
+  minLeaf: 1,
   probe: { x: 12, y: 13 },
   tree: null,
 };
 
 const trainingChart = document.getElementById("trainingChart");
-const criterionSelect = document.getElementById("criterionSelect");
 const maxDepthInput = document.getElementById("maxDepthInput");
 const maxDepthOutput = document.getElementById("maxDepthOutput");
-const minLeafInput = document.getElementById("minLeafInput");
-const minLeafOutput = document.getElementById("minLeafOutput");
-const clickInput = document.getElementById("clickInput");
-const clickOutput = document.getElementById("clickOutput");
-const durationInput = document.getElementById("durationInput");
-const durationOutput = document.getElementById("durationOutput");
 const statusBadge = document.getElementById("statusBadge");
 const probeValue = document.getElementById("probeValue");
 const predictionValue = document.getElementById("predictionValue");
 const pathText = document.getElementById("pathText");
 const criterionValue = document.getElementById("criterionValue");
+const minLeafValue = document.getElementById("minLeafValue");
 const rootSplitValue = document.getElementById("rootSplitValue");
 const leafCountValue = document.getElementById("leafCountValue");
 const accuracyValue = document.getElementById("accuracyValue");
 const treeContainer = document.getElementById("treeContainer");
 
 let nextNodeId = 1;
+let currentTreeDiagram = null;
 
 function svgEl(tag, attributes = {}, text = "") {
   const element = document.createElementNS(svgNamespace, tag);
@@ -260,23 +248,11 @@ function majorityClass(rows) {
     })[0].className;
 }
 
-function impurity(rows, criterion) {
+function impurity(rows) {
   if (rows.length === 0) return 0;
 
   const counts = countsOf(rows);
   const probabilities = classOrder.map((className) => counts[className] / rows.length);
-
-  if (criterion === "entropy") {
-    return probabilities.reduce((total, probability) => {
-      if (probability === 0) return total;
-      return total - probability * Math.log2(probability);
-    }, 0);
-  }
-
-  if (criterion === "error") {
-    return 1 - Math.max(...probabilities);
-  }
-
   return 1 - probabilities.reduce((total, probability) => total + probability ** 2, 0);
 }
 
@@ -307,7 +283,7 @@ function splitRows(rows, feature, threshold) {
 }
 
 function bestSplit(rows) {
-  const parentImpurity = impurity(rows, state.criterion);
+  const parentImpurity = impurity(rows);
   let best = null;
 
   ["x", "y"].forEach((feature) => {
@@ -317,8 +293,8 @@ function bestSplit(rows) {
       if (left.length < state.minLeaf || right.length < state.minLeaf) return;
 
       const weightedImpurity =
-        (left.length / rows.length) * impurity(left, state.criterion) +
-        (right.length / rows.length) * impurity(right, state.criterion);
+        (left.length / rows.length) * impurity(left) +
+        (right.length / rows.length) * impurity(right);
       const gain = parentImpurity - weightedImpurity;
       const candidate = { feature, threshold, gain, left, right };
 
@@ -343,7 +319,7 @@ function trainNode(rows, depth) {
     samples: rows.length,
     counts: countsOf(rows),
     prediction: majorityClass(rows),
-    impurity: impurity(rows, state.criterion),
+    impurity: impurity(rows),
     isLeaf: true,
   };
   nextNodeId += 1;
@@ -717,58 +693,145 @@ function drawChart(tree) {
   drawProbe();
 }
 
-function renderTreeNode(node, activePath) {
-  const card = document.createElement("div");
-  const classNames = ["tree-card"];
+function renderSimpleTreeNode(node, activePath) {
+  const nodeElement = document.createElement("div");
+  const classNames = ["tree-node"];
   if (activePath.has(node.id)) classNames.push("active");
 
   if (node.isLeaf) {
     classNames.push("leaf", node.prediction);
-    card.className = classNames.join(" ");
-    const title = document.createElement("p");
-    title.className = "tree-title";
-    title.textContent = `Hoja: ${classes[node.prediction].label}`;
-
-    const meta = document.createElement("p");
-    meta.className = "tree-meta";
-    meta.textContent = `${node.samples} obs. · impureza ${formatNumber(node.impurity, 3)}`;
-    card.append(title, meta);
-    return card;
+    nodeElement.className = classNames.join(" ");
+    nodeElement.textContent = classes[node.prediction].label;
+    return nodeElement;
   }
 
-  card.className = classNames.join(" ");
-  const title = document.createElement("p");
-  title.className = "tree-title";
-  title.textContent = `¿${featureNames[node.feature]} < ${formatNumber(node.threshold)}?`;
+  classNames.push("question");
+  nodeElement.className = classNames.join(" ");
+  nodeElement.textContent = `¿${featureNames[node.feature]} < ${formatNumber(
+    node.threshold,
+  )}?`;
+  return nodeElement;
+}
 
-  const meta = document.createElement("p");
-  meta.className = "tree-meta";
-  meta.textContent = `${node.samples} obs. · ganancia ${formatNumber(node.gain, 3)}`;
+function renderTreeBranch(node, activePath, label) {
+  const branch = document.createElement("div");
+  branch.className = "tree-child";
 
-  const children = document.createElement("div");
-  children.className = "tree-children";
+  const branchLabel = document.createElement("span");
+  branchLabel.className = activePath.has(node.id) ? "tree-branch-label active" : "tree-branch-label";
+  branchLabel.textContent = label;
 
-  const leftBranch = document.createElement("div");
-  leftBranch.className = "tree-branch";
-  const leftLabel = document.createElement("span");
-  leftLabel.className = "branch-label";
-  leftLabel.textContent = "sí";
-  leftBranch.append(leftLabel, renderTreeNode(node.left, activePath));
+  branch.append(branchLabel, renderTreeSubtree(node, activePath));
+  return branch;
+}
 
-  const rightBranch = document.createElement("div");
-  rightBranch.className = "tree-branch";
-  const rightLabel = document.createElement("span");
-  rightLabel.className = "branch-label";
-  rightLabel.textContent = "no";
-  rightBranch.append(rightLabel, renderTreeNode(node.right, activePath));
+function renderTreeSubtree(node, activePath) {
+  const subtree = document.createElement("div");
+  subtree.className = node.isLeaf ? "tree-subtree" : "tree-subtree has-children";
+  subtree.append(renderSimpleTreeNode(node, activePath));
 
-  children.append(leftBranch, rightBranch);
-  card.append(title, meta, children);
-  return card;
+  if (!node.isLeaf) {
+    const children = document.createElement("div");
+    children.className = "tree-children-row";
+    children.append(
+      renderTreeBranch(node.left, activePath, "sí"),
+      renderTreeBranch(node.right, activePath, "no"),
+    );
+    subtree.append(children);
+  }
+
+  return subtree;
 }
 
 function renderTree(tree, prediction) {
-  treeContainer.replaceChildren(renderTreeNode(tree, new Set(prediction.path)));
+  const activePath = new Set(prediction.path);
+  const diagram = document.createElement("div");
+  diagram.className = "tree-diagram";
+  diagram.append(renderTreeSubtree(tree, activePath));
+  treeContainer.replaceChildren(diagram);
+  scheduleTreeConnectors(diagram);
+}
+
+function directChildByClass(element, className) {
+  return Array.from(element.children).find((child) => child.classList.contains(className));
+}
+
+function coordinate(value) {
+  return Math.round(value * 10) / 10;
+}
+
+function drawTreeConnectors(diagram) {
+  if (!diagram || typeof diagram.querySelectorAll !== "function") return;
+
+  const previousConnectors = diagram.querySelector(".tree-connectors");
+  if (previousConnectors) previousConnectors.remove();
+
+  const parentSubtrees = Array.from(diagram.querySelectorAll(".tree-subtree.has-children"));
+  if (parentSubtrees.length === 0) return;
+
+  const diagramRect = diagram.getBoundingClientRect();
+  const width = Math.max(diagram.scrollWidth, diagramRect.width, 1);
+  const height = Math.max(diagram.scrollHeight, diagramRect.height, 1);
+  const connectors = svgEl("svg", {
+    class: "tree-connectors",
+    width,
+    height,
+    viewBox: `0 0 ${width} ${height}`,
+    "aria-hidden": "true",
+    focusable: "false",
+  });
+
+  parentSubtrees.forEach((subtree) => {
+    const parentNode = directChildByClass(subtree, "tree-node");
+    const childrenRow = directChildByClass(subtree, "tree-children-row");
+    if (!parentNode || !childrenRow) return;
+
+    const parentRect = parentNode.getBoundingClientRect();
+    const startX = parentRect.left + parentRect.width / 2 - diagramRect.left;
+    const startY = parentRect.bottom - diagramRect.top;
+
+    Array.from(childrenRow.children).forEach((childBranch) => {
+      const childSubtree = directChildByClass(childBranch, "tree-subtree");
+      if (!childSubtree) return;
+
+      const childNode = directChildByClass(childSubtree, "tree-node");
+      if (!childNode) return;
+
+      const childRect = childNode.getBoundingClientRect();
+      const endX = childRect.left + childRect.width / 2 - diagramRect.left;
+      const endY = childRect.top - diagramRect.top;
+      const middleY = startY + Math.max(8, (endY - startY) / 2);
+
+      connectors.appendChild(
+        svgEl("path", {
+          class: "tree-edge",
+          d: [
+            `M ${coordinate(startX)} ${coordinate(startY)}`,
+            `V ${coordinate(middleY)}`,
+            `H ${coordinate(endX)}`,
+            `V ${coordinate(endY)}`,
+          ].join(" "),
+        }),
+      );
+    });
+  });
+
+  diagram.prepend(connectors);
+}
+
+function scheduleTreeConnectors(diagram) {
+  currentTreeDiagram = diagram;
+
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(() => drawTreeConnectors(diagram));
+    return;
+  }
+
+  drawTreeConnectors(diagram);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("resize", () => drawTreeConnectors(currentTreeDiagram));
 }
 
 function renderSummary(tree, prediction) {
@@ -777,10 +840,8 @@ function renderSummary(tree, prediction) {
   const accuracy = trainingAccuracy(tree);
 
   maxDepthOutput.textContent = String(state.maxDepth);
-  minLeafOutput.textContent = String(state.minLeaf);
-  clickOutput.textContent = formatNumber(state.probe.x);
-  durationOutput.textContent = formatNumber(state.probe.y);
-  criterionValue.textContent = criterionLabels[state.criterion];
+  criterionValue.textContent = "Gini";
+  minLeafValue.textContent = String(state.minLeaf);
   rootSplitValue.textContent = tree.isLeaf
     ? "Sin corte"
     : `${featureNames[tree.feature]} < ${formatNumber(tree.threshold)}`;
@@ -806,33 +867,8 @@ function retrainAndRender() {
   renderSummary(state.tree, prediction);
 }
 
-function updateProbeFromInputs() {
-  state.probe.x = Number(clickInput.value);
-  state.probe.y = Number(durationInput.value);
-}
-
-criterionSelect.addEventListener("change", () => {
-  state.criterion = criterionSelect.value;
-  retrainAndRender();
-});
-
 maxDepthInput.addEventListener("input", () => {
   state.maxDepth = Number(maxDepthInput.value);
-  retrainAndRender();
-});
-
-minLeafInput.addEventListener("input", () => {
-  state.minLeaf = Number(minLeafInput.value);
-  retrainAndRender();
-});
-
-clickInput.addEventListener("input", () => {
-  updateProbeFromInputs();
-  retrainAndRender();
-});
-
-durationInput.addEventListener("input", () => {
-  updateProbeFromInputs();
   retrainAndRender();
 });
 
@@ -848,8 +884,6 @@ trainingChart.addEventListener("click", (event) => {
 
   state.probe.x = Number(nextX.toFixed(1));
   state.probe.y = Number(nextY.toFixed(1));
-  clickInput.value = String(state.probe.x);
-  durationInput.value = String(state.probe.y);
   retrainAndRender();
 });
 

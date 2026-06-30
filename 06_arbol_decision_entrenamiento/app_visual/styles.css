@@ -27,9 +27,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
-  background:
-    linear-gradient(180deg, #ffffff 0%, var(--bg) 45%),
-    var(--bg);
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 45%), var(--bg);
   font-family:
     Inter,
     ui-sans-serif,
@@ -51,7 +49,7 @@ select {
 }
 
 .workspace {
-  width: min(1280px, 100%);
+  width: min(1480px, 100%);
   margin: 0 auto;
 }
 
@@ -121,7 +119,7 @@ h2 {
 
 .control-panel {
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) repeat(4, minmax(150px, 0.8fr));
+  grid-template-columns: minmax(220px, 320px);
   align-items: end;
   gap: 14px;
   margin-bottom: 16px;
@@ -172,14 +170,14 @@ input:focus-visible {
 
 .visual-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 390px;
+  grid-template-columns: minmax(0, 1fr) 620px;
   gap: 16px;
   align-items: start;
 }
 
 .chart-panel,
 .side-panel {
-  overflow: hidden;
+  overflow: scroll;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -214,11 +212,7 @@ input:focus-visible {
   color: #075985;
   background: #f0f9ff;
   border-color: #bae6fd;
-  font-family:
-    "SFMono-Regular",
-    Consolas,
-    "Liberation Mono",
-    monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -449,85 +443,133 @@ input:focus-visible {
   color: #475467;
   font-size: 14px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .trained-tree {
-  display: grid;
-  gap: 8px;
-  max-height: 420px;
+  max-height: 460px;
   overflow: auto;
-  padding-right: 2px;
+  padding-right: 4px;
 }
 
-.tree-card {
-  padding: 9px;
-  border: 1px solid #d7dee9;
-  border-radius: 8px;
-  background: #f8fafc;
+.tree-diagram {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-width: max-content;
 }
 
-.tree-card.active {
-  border-color: #f59e0b;
-  background: #fffbeb;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+.tree-connectors {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
 
-.tree-card.leaf {
-  border-color: #cbd5e1;
+.tree-edge {
+  fill: none;
+  stroke: #9aaabe;
+  stroke-width: 1.1;
+  stroke-linecap: square;
+  stroke-linejoin: round;
 }
 
-.tree-card.leaf.abandon {
-  background: var(--blue-soft);
-}
-
-.tree-card.leaf.browse {
-  background: var(--green-soft);
-}
-
-.tree-card.leaf.cart {
-  background: var(--orange-soft);
-}
-
-.tree-card.leaf.buy {
-  background: var(--red-soft);
-}
-
-.tree-title {
-  margin: 0 0 4px;
-  color: #172033;
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.tree-meta {
-  margin: 0;
-  color: #475467;
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.tree-children {
+.tree-subtree {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
+  gap: 4px;
+  justify-content: center;
+  justify-items: center;
+  width: max-content;
 }
 
-.tree-branch {
+.tree-children-row {
   display: grid;
-  gap: 6px;
-  min-width: 0;
+  grid-template-columns: repeat(2, max-content);
+  gap: 12px;
+  justify-content: center;
+  padding-top: 10px;
 }
 
-.branch-label {
-  justify-self: start;
-  padding: 3px 7px;
-  color: #475467;
-  background: #fff;
+.tree-child {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  min-width: max-content;
+}
+
+.tree-branch-label {
+  min-height: 16px;
+  padding: 1px 4px;
+  color: var(--muted);
   border: 1px solid #e4e7ec;
   border-radius: 999px;
-  font-size: 11px;
+  background: #f8fafc;
+  font-size: 8px;
   font-weight: 850;
+  line-height: 1.1;
+}
+
+.tree-node {
+  display: grid;
+  width: max-content;
+  min-height: 24px;
+  min-width: 0;
+  align-items: center;
+  justify-items: center;
+  padding: 3px 5px;
+  color: #344054;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 8px;
+  font-weight: 850;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tree-node.question {
+  background: #eef6ff;
+  border-color: #bfdbfe;
+}
+
+.tree-node.leaf.abandon {
+  color: #1d4ed8;
+  background: var(--blue-soft);
+  border-color: #93c5fd;
+}
+
+.tree-node.leaf.browse {
+  color: #166534;
+  background: var(--green-soft);
+  border-color: #86efac;
+}
+
+.tree-node.leaf.cart {
+  color: #9a3412;
+  background: var(--orange-soft);
+  border-color: #fdba74;
+}
+
+.tree-node.leaf.buy {
+  color: #be123c;
+  background: var(--red-soft);
+  border-color: #fda4af;
+}
+
+.tree-node.active,
+.tree-node.leaf.active,
+.tree-branch-label.active {
+  color: #111827;
+  background: #fef3c7;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.16);
 }
 
 .concept-list {
@@ -559,7 +601,7 @@ input:focus-visible {
 
 @media (max-width: 1180px) {
   .control-panel {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(220px, 320px);
   }
 
   .visual-grid {
@@ -585,7 +627,6 @@ input:focus-visible {
     flex-direction: column;
   }
 
-  .tree-children,
   .compact-metrics {
     grid-template-columns: 1fr;
   }

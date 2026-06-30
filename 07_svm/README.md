@@ -17,9 +17,8 @@ evita fórmulas.
 
 ## Interacción
 
-El usuario compara tres formas de separar:
+El usuario compara dos formas de separar:
 
-- recta suave;
 - recta estricta;
 - curva flexible.
 

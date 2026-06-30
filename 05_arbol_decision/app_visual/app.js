@@ -141,10 +141,6 @@ const state = {
 };
 
 const treeChart = document.getElementById("treeChart");
-const clickInput = document.getElementById("clickInput");
-const clickOutput = document.getElementById("clickOutput");
-const durationInput = document.getElementById("durationInput");
-const durationOutput = document.getElementById("durationOutput");
 const statusBadge = document.getElementById("statusBadge");
 const probeValue = document.getElementById("probeValue");
 const predictionValue = document.getElementById("predictionValue");
@@ -539,8 +535,6 @@ function renderTreePath(result) {
 function renderSummary(result) {
   const classInfo = classes[result.className];
 
-  clickOutput.textContent = formatNumber(state.probe.x);
-  durationOutput.textContent = formatNumber(state.probe.y);
   probeValue.textContent = `${formatNumber(state.probe.x)} clics, ${formatNumber(
     state.probe.y,
   )} min`;
@@ -557,21 +551,6 @@ function render() {
   renderSummary(result);
 }
 
-function updateProbeFromInputs() {
-  state.probe.x = Number(clickInput.value);
-  state.probe.y = Number(durationInput.value);
-}
-
-clickInput.addEventListener("input", () => {
-  updateProbeFromInputs();
-  render();
-});
-
-durationInput.addEventListener("input", () => {
-  updateProbeFromInputs();
-  render();
-});
-
 treeChart.addEventListener("click", (event) => {
   const rect = treeChart.getBoundingClientRect();
   const scaleX = chart.width / rect.width;
@@ -584,8 +563,6 @@ treeChart.addEventListener("click", (event) => {
 
   state.probe.x = Number(nextX.toFixed(1));
   state.probe.y = Number(nextY.toFixed(1));
-  clickInput.value = String(state.probe.x);
-  durationInput.value = String(state.probe.y);
   render();
 });
 

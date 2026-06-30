@@ -145,10 +145,6 @@ const knnChart = document.getElementById("knnChart");
 const kValue = document.getElementById("kValue");
 const kOutput = document.getElementById("kOutput");
 const distanceMetric = document.getElementById("distanceMetric");
-const clickInput = document.getElementById("clickInput");
-const clickOutput = document.getElementById("clickOutput");
-const durationInput = document.getElementById("durationInput");
-const durationOutput = document.getElementById("durationOutput");
 const statusBadge = document.getElementById("statusBadge");
 const probeValue = document.getElementById("probeValue");
 const predictionValue = document.getElementById("predictionValue");
@@ -547,8 +543,6 @@ function renderSummary(result) {
     state.distance === "euclidean" ? "distancia euclidiana" : "distancia Manhattan";
 
   kOutput.textContent = String(state.k);
-  clickOutput.textContent = formatNumber(state.probe.x);
-  durationOutput.textContent = formatNumber(state.probe.y);
   probeValue.textContent = `${formatNumber(state.probe.x)} clics, ${formatNumber(
     state.probe.y,
   )} min`;
@@ -576,11 +570,6 @@ function render() {
   renderSummary(result);
 }
 
-function updateProbeFromInputs() {
-  state.probe.x = Number(clickInput.value);
-  state.probe.y = Number(durationInput.value);
-}
-
 kValue.addEventListener("input", () => {
   state.k = Number(kValue.value);
   render();
@@ -588,16 +577,6 @@ kValue.addEventListener("input", () => {
 
 distanceMetric.addEventListener("change", () => {
   state.distance = distanceMetric.value;
-  render();
-});
-
-clickInput.addEventListener("input", () => {
-  updateProbeFromInputs();
-  render();
-});
-
-durationInput.addEventListener("input", () => {
-  updateProbeFromInputs();
   render();
 });
 
@@ -613,8 +592,6 @@ knnChart.addEventListener("click", (event) => {
 
   state.probe.x = Number(nextX.toFixed(1));
   state.probe.y = Number(nextY.toFixed(1));
-  clickInput.value = String(state.probe.x);
-  durationInput.value = String(state.probe.y);
   render();
 });
 

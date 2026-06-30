@@ -16,19 +16,6 @@ const points = [
 ];
 
 const presets = {
-  "linear-c01": {
-    label: "Recta suave",
-    kernel: "linear",
-    kernelLabel: "Lineal",
-    C: 0.1,
-    gamma: null,
-    summary: "Usa una línea recta y prefiere una separación simple.",
-    explanation:
-      "La SVM dibuja una recta para separar azul de rojo. Es la opción más fácil de entender.",
-    kernelMeaning: "Recta.",
-    cMeaning: "Suave: permite pequeños errores.",
-    gammaMeaning: "",
-  },
   "linear-c10": {
     label: "Recta estricta",
     kernel: "linear",
@@ -71,7 +58,7 @@ chart.plotWidth = chart.width - chart.margin.left - chart.margin.right;
 chart.plotHeight = chart.height - chart.margin.top - chart.margin.bottom;
 
 const state = {
-  preset: "linear-c01",
+  preset: "linear-c10",
   probe: { x: 4.8, y: 4.6 },
 };
 

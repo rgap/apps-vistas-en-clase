@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clusterizacion de clientes</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje no supervisado</p>
+            <h1 id="app-title">Clusterizacion de clientes</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>Segmentacion</span>
+            <strong>Visitas y gasto mensual</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles de clusterizacion">
+          <div class="field">
+            <label for="methodSelect">Metodo de clusterizacion</label>
+            <select id="methodSelect">
+              <option value="kmeans" selected>K-means</option>
+              <option value="meanshift">Mean Shift</option>
+              <option value="dbscan">DBSCAN</option>
+            </select>
+          </div>
+
+          <div class="preset-copy">
+            <p id="methodSummary" class="preset-summary">
+              Fija k = 4 y acerca cada cliente al centroide mas cercano.
+            </p>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Clientes y clusters">
+            <div class="chart-heading">
+              <div>
+                <p class="stage-label">Clientes anteriores</p>
+                <h2>Clientes segun visitas y gasto mensual</h2>
+                <p>
+                  Cada punto representa un cliente anterior. El objetivo es
+                  encontrar segmentos con comportamientos similares.
+                </p>
+              </div>
+            </div>
+
+            <svg
+              id="clusterChart"
+              class="cluster-chart"
+              viewBox="0 0 920 600"
+              role="img"
+              aria-label="Clientes agrupados por visitas y gasto mensual"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot cluster-0"></i> Segmento 1</span>
+              <span><i class="dot cluster-1"></i> Segmento 2</span>
+              <span><i class="dot cluster-2"></i> Segmento 3</span>
+              <span><i class="dot cluster-3"></i> Segmento 4</span>
+              <span><i class="dot noise"></i> Ruido</span>
+              <span><i class="center-sample"></i> Centro / modo</span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Lectura del metodo">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Resultado</h2>
+                <span id="methodBadge" class="status-badge">K-means</span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Segmentos encontrados</dt>
+                  <dd id="clusterCount" class="main-metric">4</dd>
+                </div>
+                <div>
+                  <dt>Clientes marcados como ruido</dt>
+                  <dd id="noiseCount">0</dd>
+                </div>
+                <div>
+                  <dt>Segmento mas grande</dt>
+                  <dd id="largestCluster">-</dd>
+                </div>
+              </dl>
+              <p id="resultText" class="microcopy">
+                K-means reparte todos los clientes en cuatro grupos.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Como decide</h2>
+              <p id="explanationText" class="explanation">
+                Empieza con centroides, asigna cada cliente al mas cercano y
+                recalcula los centros varias veces.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Parametros</h2>
+              <dl class="metric-list compact">
+                <div>
+                  <dt id="paramOneLabel">k</dt>
+                  <dd id="paramOneValue">4 segmentos</dd>
+                </div>
+                <div>
+                  <dt id="paramTwoLabel">Escala</dt>
+                  <dd id="paramTwoValue">visitas y gasto normalizados</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel-section">
+              <h2>Comparacion</h2>
+              <div class="concept-list">
+                <div class="concept-item">
+                  <span class="concept-term">K-means</span>
+                  <p>Rapido y claro, pero necesita elegir k.</p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">Mean Shift</span>
+                  <p>Encuentra zonas densas sin indicar cuantas hay.</p>
+                </div>
+                <div class="concept-item">
+                  <span class="concept-term">DBSCAN</span>
+                  <p>Detecta grupos densos y separa clientes atipicos.</p>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
