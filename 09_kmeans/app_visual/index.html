@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>K-means ciclo a ciclo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Aprendizaje no supervisado</p>
+            <h1 id="app-title">K-means ciclo a ciclo</h1>
+          </div>
+          <div class="topic-summary" aria-label="Resumen del tema">
+            <span>k = 4</span>
+            <strong>Asignar, promediar, mover</strong>
+          </div>
+        </header>
+
+        <section class="control-panel" aria-label="Controles de ciclos">
+          <div class="button-row">
+            <button id="previousCycle" type="button">Anterior</button>
+            <button id="playPause" class="primary-button" type="button">
+              Reproducir
+            </button>
+            <button id="nextCycle" type="button">Siguiente</button>
+          </div>
+
+          <div class="cycle-control">
+            <label for="cycleRange">Ciclo</label>
+            <input id="cycleRange" type="range" min="0" value="0" step="1" />
+            <output id="cycleOutput" for="cycleRange">0</output>
+          </div>
+
+          <div class="preset-copy">
+            <p id="cycleSummary" class="preset-summary">
+              Se colocan cuatro centroides iniciales antes de asignar puntos.
+            </p>
+          </div>
+        </section>
+
+        <section class="visual-grid">
+          <section class="chart-panel" aria-label="Grafico de K-means">
+            <div class="chart-heading">
+              <div>
+                <p id="stageLabel" class="stage-label">Inicializacion</p>
+                <h2>Puntos, asignaciones y movimiento de centroides</h2>
+                <p>
+                  En cada ciclo los puntos se asignan al centroide mas cercano.
+                  Luego cada centroide se mueve al promedio de su grupo.
+                </p>
+              </div>
+              <div class="formula-box" aria-label="Regla de actualizacion">
+                <span>centroide nuevo</span>
+                <strong>promedio(x, y) del grupo</strong>
+              </div>
+            </div>
+
+            <svg
+              id="kmeansChart"
+              class="kmeans-chart"
+              viewBox="0 0 920 620"
+              role="img"
+              aria-label="Visualizacion de ciclos de K-means"
+            ></svg>
+
+            <div class="legend" aria-label="Leyenda">
+              <span><i class="dot cluster-0"></i> Cluster 1</span>
+              <span><i class="dot cluster-1"></i> Cluster 2</span>
+              <span><i class="dot cluster-2"></i> Cluster 3</span>
+              <span><i class="dot cluster-3"></i> Cluster 4</span>
+              <span><i class="center-sample"></i> Centroide actual</span>
+              <span><i class="previous-sample"></i> Posicion anterior</span>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Lectura del ciclo">
+            <section class="panel-section result-section">
+              <div class="result-heading">
+                <h2>Estado</h2>
+                <span id="statusBadge" class="status-badge">Inicio</span>
+              </div>
+              <dl class="metric-list">
+                <div>
+                  <dt>Ciclo actual</dt>
+                  <dd id="cycleMetric" class="main-metric">0</dd>
+                </div>
+                <div>
+                  <dt>Puntos reasignados</dt>
+                  <dd id="changedMetric">-</dd>
+                </div>
+                <div>
+                  <dt>Movimiento total</dt>
+                  <dd id="shiftMetric">-</dd>
+                </div>
+              </dl>
+              <p id="resultText" class="microcopy">
+                Todavia no hay clusters: solo posiciones iniciales.
+              </p>
+            </section>
+
+            <section class="panel-section">
+              <h2>Que ocurre</h2>
+              <ol id="cycleSteps" class="step-list">
+                <li>Elegir k y colocar centroides iniciales.</li>
+                <li>Esperar el primer ciclo de asignacion.</li>
+              </ol>
+            </section>
+
+            <section class="panel-section">
+              <h2>Centroides</h2>
+              <div id="centroidRows" class="centroid-rows"></div>
+            </section>
+
+            <section class="panel-section">
+              <h2>Historial</h2>
+              <div id="historyList" class="history-list"></div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
